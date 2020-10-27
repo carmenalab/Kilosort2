@@ -137,10 +137,10 @@ if ~isempty(savePath)
 %     end
 %     fclose(fileID);
 
-    fileID = fopen(fullfile(savePath, 'cluster_KSLabel.tsv'),'w');
+    KSLabelFilename = fullfile(savePath,'cluster_KSLabel.tsv');
+    fileID = fopen(KSLabelFilename,'w');
     fprintf(fileID, 'cluster_id%sKSLabel', char(9));
     fprintf(fileID, char([13 10]));
-
     fileIDCP = fopen(fullfile(savePath, 'cluster_ContamPct.tsv'),'w');
     fprintf(fileIDCP, 'cluster_id%sContamPct', char(9));
     fprintf(fileIDCP, char([13 10]));
@@ -148,6 +148,7 @@ if ~isempty(savePath)
     fileIDA = fopen(fullfile(savePath, 'cluster_Amplitude.tsv'),'w');
     fprintf(fileIDA, 'cluster_id%sAmplitude', char(9));
     fprintf(fileIDA, char([13 10]));
+
 
     rez.est_contam_rate(isnan(rez.est_contam_rate)) = 1;
     for j = 1:length(rez.good)
@@ -168,6 +169,8 @@ if ~isempty(savePath)
     fclose(fileID);
     fclose(fileIDCP);
     fclose(fileIDA);
+    copyfile(KSLabelFilename, fullfile(savePath, 'cluster_group.tsv'));
+
 
      %make params file
     if ~exist(fullfile(savePath,'params.py'),'file')
