@@ -80,12 +80,14 @@ end
 % The amplitude on each channel is the positive peak minus the negative
 tempChanAmps = squeeze(max(tempsUnW,[],2))-squeeze(min(tempsUnW,[],2));
 
+
 % The template amplitude is the amplitude of its largest channel
-tempAmpsUnscaled = max(tempChanAmps,[],2);
+[tempAmpsUnscaled, bestChannelsUnW] = max(tempChanAmps,[],2);
 
 % assign all spikes the amplitude of their template multiplied by their
 % scaling amplitudes
 spikeAmps = tempAmpsUnscaled(spikeTemplates).*amplitudes;
+
 
 % take the average of all spike amps to get actual template amps (since
 % tempScalingAmps are equal mean for all templates)
@@ -150,6 +152,11 @@ if ~isempty(savePath)
     fprintf(fileIDA, char([13 10]));
 
 
+    fileBestChannelsUnW = fopen(fullfile(savePath, 'cluster_BestChannelUnW.tsv'),'w');
+    fprintf(fileBestChannelsUnW, 'cluster_id%sBestChannelUnW', char(9));
+    fprintf(fileBestChannelsUnW, char([13 10]));
+
+
     rez.est_contam_rate(isnan(rez.est_contam_rate)) = 1;
     for j = 1:length(rez.good)
         if rez.good(j)
@@ -165,10 +172,14 @@ if ~isempty(savePath)
         fprintf(fileIDA, '%d%s%.1f', j-1, char(9), tempAmps(j));
         fprintf(fileIDA, char([13 10]));
 
+        fprintf(fileBestChannelsUnW, '%d%s%d', j-1, char(9), chanMap0ind(bestChannelsUnW(j)));
+        fprintf(fileBestChannelsUnW, char([13 10]));
+
     end
     fclose(fileID);
     fclose(fileIDCP);
     fclose(fileIDA);
+    fclose(fileBestChannelsUnW);
     copyfile(KSLabelFilename, fullfile(savePath, 'cluster_group.tsv'));
 
 
