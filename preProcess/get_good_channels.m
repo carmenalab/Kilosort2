@@ -66,5 +66,13 @@ nc = nc/ttime; % divide by total time to get firing rate
 % igood = nc>.1;
 igood = nc>=getOr(ops, 'minfr_goodchannels', .1); % keep only those channels above the preset mean firing rate
 
+if isfield(ops, 'bad_channels')
+  fprintf('Excluding %s channels from being good\n', ops.bad_channels);
+  for i = 1:length(ops.bad_channels)
+    igood(ops.bad_channels(i)) = 0;
+  end
+end
+
+
 fprintf('found %d threshold crossings in %2.2f seconds of data \n', k, ttime)
 fprintf('found %d bad channels \n', sum(~igood))
